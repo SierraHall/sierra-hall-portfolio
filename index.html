@@ -1,0 +1,786 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sierra Hall</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Sierra Hall: implementation and program leadership, AI governance and enablement. Technology doesn't transform organizations. People do.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=JetBrains+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: one dark stage, like the deck. Sections are scenes; the elephant moves between them. */
+:root{
+  --ink:#121314; --stage:#1A1B1D; --smoke:#26272A; --line:#3A3B3F;
+  --ivory:#F3EDE2; --muted:#BDB6AA; --gold:#C3A16A; --gold-hi:#E4C68E; --ember:#C96F52;
+  --display:'Manrope', 'Segoe UI', system-ui, sans-serif;
+  --serif:'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --mono:'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--ivory);font-family:var(--display);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--gold)} a:hover{color:var(--gold-hi)}
+:focus-visible{outline:2px solid var(--gold-hi);outline-offset:3px;border-radius:4px}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(20px, env(safe-area-inset-left, 0px));padding-right:max(20px, env(safe-area-inset-right, 0px))}
+section{padding-block:96px;position:relative}
+h1,h2,h3{text-wrap:balance;margin:0}
+h2{font-size:clamp(32px,4.4vw,52px);line-height:1.08;font-weight:800;letter-spacing:-0.01em}
+.eyebrow{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-weight:700}
+.lede{color:var(--muted);max-width:62ch;margin:0}
+.serif{font-family:var(--serif)}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:12px 24px;border-radius:999px;font:700 15px/1 var(--display);letter-spacing:.02em;text-decoration:none;cursor:pointer;border:1px solid var(--gold);transition:background .25s,color .25s,box-shadow .25s}
+.btn-gold{background:var(--gold);color:#16120C}
+.btn-gold:hover{background:var(--gold-hi);color:#16120C;box-shadow:0 0 28px rgba(228,198,142,.35)}
+.btn-ghost{background:transparent;color:var(--ivory)}
+.btn-ghost:hover{background:rgba(195,161,106,.12);color:var(--ivory)}
+.chip{font:600 14px/1 var(--display);padding:11px 16px;min-height:44px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ivory);cursor:pointer;transition:all .2s}
+.chip[aria-pressed="true"]{background:var(--gold);color:#16120C;border-color:var(--gold)}
+.chip:hover{border-color:var(--gold)}
+.glow{filter:drop-shadow(0 0 6px rgba(228,198,142,.55))}
+
+/* NAV */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(18,19,20,.82);backdrop-filter:blur(10px);border-bottom:1px solid rgba(58,59,63,.6)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--ink)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;color:var(--ivory);text-decoration:none;font-weight:800;letter-spacing:.06em}
+.nav nav{display:flex;gap:22px;flex-wrap:wrap;font-size:14px}
+.nav nav a{color:var(--muted);text-decoration:none} .nav nav a:hover{color:var(--gold-hi)}
+
+/* HERO */
+.hero{padding-block:72px 88px;overflow:hidden}
+.hero .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:56px}
+.hero-copy{flex:999 1 480px;min-width:0;display:flex;flex-direction:column;gap:24px}
+.hero h1{font-size:clamp(40px,6vw,72px);line-height:1.02;font-weight:800;letter-spacing:-.02em}
+.hero h1 em{font-style:normal;color:var(--gold);text-shadow:0 0 24px rgba(195,161,106,.35)}
+.hero-line{font-family:var(--serif);font-style:italic;font-size:24px;line-height:1.3;color:var(--ivory);margin:0}
+.hero-photo{flex:1 1 360px;max-width:440px;position:relative;aspect-ratio:420/540;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px rgba(195,161,106,.35),0 30px 80px rgba(0,0,0,.6),0 0 60px rgba(195,161,106,.15)}
+.hero-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.hero-photo figcaption{position:absolute;left:10px;bottom:10px;font-size:12px;color:var(--ivory);background:rgba(18,19,20,.75);padding:4px 8px;border-radius:4px}
+.smoke{position:absolute;inset:0;pointer-events:none;opacity:.5;background:radial-gradient(60% 40% at 80% 20%,rgba(195,161,106,.10),transparent 70%),radial-gradient(40% 30% at 10% 90%,rgba(243,237,226,.05),transparent 70%)}
+
+/* SUPERPOWER */
+.power{background:var(--stage);border-block:1px solid var(--line)}
+.power .wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:40px;align-items:end}
+.power p.big{font-size:clamp(28px,3.4vw,40px);line-height:1.2;font-weight:800;margin:0;color:var(--gold)}
+
+/* HERD (walking metrics) */
+.herd-stage{position:relative;height:150px;margin-top:40px;border-bottom:1px solid var(--line);overflow:hidden}
+.walker{position:absolute;bottom:4px;left:0;width:180px;transform:translateX(-220px);will-change:transform}
+.walker svg{width:180px;height:auto;display:block}
+.walker .tag{position:absolute;left:44px;top:-6px;background:var(--ink);border:1px solid var(--gold);color:var(--gold-hi);font:700 14px/1 var(--display);padding:6px 10px;border-radius:6px;white-space:nowrap;box-shadow:0 0 16px rgba(195,161,106,.3)}
+.walker.go{animation:walk var(--dur,14s) linear var(--delay,0s) infinite}
+.walker.go .leg{animation:stride .9s ease-in-out infinite alternate}
+.walker.go .leg.b{animation-delay:-.45s}
+@keyframes walk{from{transform:translateX(-220px)}to{transform:translateX(calc(100vw + 40px))}}
+@keyframes stride{from{transform:rotate(-9deg)}to{transform:rotate(9deg)}}
+.leg{transform-box:fill-box;transform-origin:50% 0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:28px}
+.stat{border-top:1px solid var(--gold);padding-top:14px;transition:text-shadow .4s}
+.stat b{display:block;font-size:clamp(34px,3.6vw,46px);line-height:1.05;font-weight:800;color:var(--ivory);font-variant-numeric:tabular-nums}
+.stat span{color:var(--muted);font-size:15px}
+.stat.lit b{color:var(--gold-hi);text-shadow:0 0 22px rgba(228,198,142,.45)}
+.tier{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:700;display:block;margin-bottom:6px}
+
+/* JOURNEY */
+.journey{background:var(--stage)}
+.j-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:20px}
+.dots{display:flex;gap:2px;align-items:center;margin-top:28px;flex-wrap:wrap}
+.dot{width:40px;height:44px;border:0;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.dot i{display:block;height:8px;width:8px;border-radius:4px;background:var(--line);transition:all .3s}
+.dot.done i{background:var(--gold)} .dot.on i{width:26px;background:var(--gold-hi)}
+.chapter{display:flex;flex-wrap:wrap;gap:36px;margin-top:20px;min-height:430px}
+.ch-text{flex:1 1 420px;min-width:0;display:flex;flex-direction:column;gap:14px}
+.ch-text h3{font-size:clamp(28px,3vw,40px);line-height:1.1;font-weight:800}
+.ch-side{flex:1 1 380px;min-width:0}
+.fade{animation:fade .5s ease both}
+@keyframes fade{from{opacity:.001;transform:translateY(10px)}to{opacity:1;transform:none}}
+.reveal{font-family:var(--serif);font-size:26px;line-height:1.3;color:var(--gold-hi);margin:6px 0 0}
+.opts{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.opt{text-align:left;font:500 16px/1.4 var(--display);padding:12px 16px;min-height:44px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--ivory);cursor:pointer}
+.opt[aria-pressed="true"]{background:var(--gold);color:#16120C;border-color:var(--gold);font-weight:700}
+.card{background:var(--smoke);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.card-h{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:12px 18px;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted)}
+.typed{margin:0;padding:20px 18px;font:15px/1.65 var(--mono);min-height:120px;white-space:pre-wrap}
+.caret{color:var(--gold);animation:blink 1s step-end infinite}
+@keyframes blink{50%{opacity:0}}
+.card-f{padding:14px 18px;border-top:1px solid var(--line);background:#2C2D30;font-size:15px}
+.card-f b{color:var(--gold)}
+.big-n{font-size:96px;line-height:1;font-weight:800;font-variant-numeric:tabular-nums}
+.boxes{display:grid;grid-template-columns:repeat(20,minmax(0,1fr));gap:4px;max-width:460px}
+.boxes i{aspect-ratio:1;border:1px solid var(--gold);border-radius:2px;background:rgba(195,161,106,.18);animation:pop .4s ease both}
+@keyframes pop{from{transform:scale(.2);opacity:.001}to{transform:none;opacity:1}}
+.j-nav{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+details.table{margin-top:48px;border:1px solid var(--line);border-radius:12px;background:var(--ink)}
+details.table summary{cursor:pointer;padding:16px 20px;font-weight:700;list-style:none}
+details.table summary::after{content:" +";color:var(--gold)}
+details.table[open] summary::after{content:" \2212"}
+.tscroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:620px;font-size:15px}
+th,td{text-align:left;padding:12px 20px;border-top:1px solid var(--line);vertical-align:top}
+th{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
+td:first-child{color:var(--muted)}
+
+/* THINKING IN ELEPHANT */
+.think .wrap{display:flex;flex-direction:column;gap:32px}
+.think-stage{position:relative;display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start}
+.head-art{flex:1 1 360px;min-width:0;position:relative}
+.head-art svg{width:100%;max-width:480px;height:auto;display:block}
+.ear{transform-box:fill-box;transform-origin:85% 15%;animation:flap 4.8s ease-in-out infinite}
+.think-stage.active .ear{animation-duration:1.4s}
+@keyframes flap{0%,100%{transform:rotate(0) scaleX(1)}50%{transform:rotate(-7deg) scaleX(.9)}}
+.part{transition:stroke .3s,stroke-width .3s}
+.part.on{stroke:var(--gold-hi);stroke-width:2.6}
+.think-panel{flex:1 1 460px;min-width:0;display:flex;flex-direction:column;gap:16px}
+.metaphor{font-family:var(--serif);font-style:italic;font-size:24px;color:var(--gold-hi);margin:0}
+.duo{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.duo div{background:var(--smoke);border-radius:10px;padding:16px}
+.duo h4{margin:0 0 6px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
+.duo p{margin:0;font-size:15px}
+
+/* BEST BUY */
+.bb{background:var(--stage)}
+.building{display:flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:24px}
+.building>div{flex:1 1 240px;padding:26px;display:flex;flex-direction:column;gap:8px}
+.zone{background:#2E2F33}
+.gap{border:1px solid var(--ember);border-radius:8px;padding:8px 12px;font-size:15px}
+.fix{background:var(--gold);color:#16120C;border-radius:8px;padding:8px 12px;font-size:15px;font-weight:700}
+.clock{margin-top:28px;background:var(--ink);border:1px solid var(--line);border-radius:14px;padding:28px;display:flex;flex-direction:column;gap:16px}
+input[type=range]{width:100%;accent-color:var(--gold);min-height:44px}
+.clock-read{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px 28px}
+.clock-read b{font-size:64px;line-height:1;font-weight:800;font-variant-numeric:tabular-nums}
+.clock-read p{margin:0;flex:1 1 300px;font-size:18px}
+.three{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:24px}
+.three>div{background:var(--smoke);border-radius:12px;padding:20px}
+.quote{font-family:var(--serif);font-size:clamp(24px,2.6vw,30px);line-height:1.3;margin:0}
+
+/* HOW I WORK */
+.loop{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-top:28px}
+.loop>div{border:1px solid var(--line);border-radius:12px;padding:20px;background:var(--stage)}
+.loop h3{font-size:22px;font-weight:800}
+.loop p{margin:6px 0 0;color:var(--muted);font-size:15px}
+.loop small{display:block;margin-top:10px;color:var(--gold);font-size:13px}
+.pyramid{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:8px}
+.pyramid div{padding:12px 16px;border:1px solid var(--gold);background:rgba(195,161,106,.10);border-radius:6px;text-align:center}
+.pyramid div:nth-child(1){width:min(100%,280px)} .pyramid div:nth-child(2){width:min(100%,380px)} .pyramid div:nth-child(3){width:min(100%,480px);background:rgba(195,161,106,.22)}
+.pyramid b{display:block} .pyramid span{font-size:14px;color:var(--muted)}
+.lib{display:flex;flex-direction:column;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.lib div{display:flex;flex-wrap:wrap;gap:6px 20px;padding:14px 18px;border-top:1px solid var(--line)}
+.lib div:first-child{border-top:0}
+.lib b{flex:0 0 150px;color:var(--gold);font-size:14px;text-transform:uppercase;letter-spacing:.08em}
+.lib code{flex:1 1 300px;font:14px/1.6 var(--mono);color:var(--ivory)}
+
+/* NEXT */
+.next{background:var(--stage)}
+.pair{display:flex;flex-wrap:wrap;gap:20px;margin-top:28px}
+.pair>div{flex:1 1 420px;min-width:0;background:var(--smoke);border-radius:14px;padding:26px;display:flex;flex-direction:column;gap:14px}
+.steps{display:flex;flex-wrap:wrap;gap:8px}
+.steps span{border:1px solid var(--gold);border-radius:999px;padding:4px 12px;font-size:14px;font-weight:700}
+.guard{margin-top:24px;border:1px solid var(--gold);border-radius:14px;padding:26px}
+.guard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px;margin-top:14px}
+.guard-grid b{color:var(--gold);display:block}
+
+/* STORY */
+.timeline{list-style:none;margin:28px 0 0;padding:0}
+.timeline li{display:flex;flex-wrap:wrap;gap:6px 28px;padding:16px 0;border-top:1px solid var(--line)}
+.timeline li:last-child{border-bottom:1px solid var(--line)}
+.timeline b{flex:0 0 150px;color:var(--gold)}
+.lessons{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:22px;margin-top:40px}
+.lessons figure{margin:0;border-top:1px solid var(--gold);padding-top:14px}
+.lessons blockquote{margin:0;font-family:var(--serif);font-style:italic;font-size:23px;line-height:1.3}
+.lessons figcaption{margin-top:8px;color:var(--muted);font-size:14px}
+
+/* FINALE */
+.finale{background:#0C0C0D;overflow:hidden}
+.finale-bg{position:absolute;inset:0;background-image:url(assets/elephant-gold.jpg);background-size:cover;background-position:70% 50%;opacity:.55}
+.finale-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#0C0C0D 15%,rgba(12,12,13,.55) 60%,rgba(12,12,13,.2))}
+.finale .wrap{position:relative;display:flex;flex-direction:column;gap:22px}
+.quiz{max-width:640px;background:rgba(18,19,20,.86);border:1px solid var(--line);border-radius:16px;padding:26px;display:flex;flex-direction:column;gap:16px}
+.quiz .progress{font-size:13px;color:var(--muted)}
+.result h3{font-size:32px;font-weight:800;color:var(--gold-hi)}
+.result p{margin:0}
+
+/* CONNECT */
+.connect .wrap{display:flex;flex-direction:column;gap:20px;align-items:flex-start}
+.email{display:flex;flex-wrap:wrap;align-items:center;gap:10px;font:16px var(--mono);user-select:all}
+footer{border-top:1px solid var(--line);padding-block:28px;color:var(--muted);font-size:14px}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
+
+@media (max-width:640px){ section{padding-block:72px} .big-n{font-size:72px} .clock-read b{font-size:48px} }
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+  .walker{transform:none;position:relative;display:inline-block;margin-right:12px}
+  .herd-stage{display:flex;align-items:flex-end;gap:8px;overflow-x:auto}
+}
+</style>
+</head>
+<body>
+
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Sierra Hall, back to top">
+      <svg width="34" height="26" viewBox="0 0 120 80" fill="none" stroke="#C3A16A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 44 C14 28 26 16 48 15 C64 14 74 18 80 24 M76 22 C82 12 98 12 102 24 C105 32 102 40 98 44 C100 54 102 62 108 66 M18 44 C20 50 26 52 32 52 L78 52 C86 52 92 48 96 44 M30 52 V70 M40 52 V70 M74 52 V70 M84 52 V70"/><path d="M80 20 C72 24 72 40 82 44 C88 40 90 30 86 22"/></svg>
+      SIERRA HALL
+    </a>
+    <nav aria-label="Sections">
+      <a href="#herd">Impact</a><a href="#journey">The journey</a><a href="#think">Thinking in elephant</a><a href="#work">How I work</a><a href="#elephant">What's your elephant?</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+<!-- HERO -->
+<section class="hero">
+  <div class="smoke" aria-hidden="true"></div>
+  <div class="wrap">
+    <div class="hero-copy">
+      <span class="eyebrow">Implementation &amp; Program Leadership · AI Governance &amp; Enablement</span>
+      <h1>Technology doesn't transform organizations. <em>People do.</em></h1>
+      <p class="hero-line">I operate in the gray. I deliver clarity in black and white.</p>
+      <p class="lede">I step into undocumented, fragmented environments, listen first, and build the intake, procedures and training that get people using new systems. Don't just read my work. Walk through it with me.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center">
+        <a class="btn btn-gold" href="#journey">Start the journey</a>
+        <a class="btn btn-ghost" href="assets/Sierra_Hall_Resume.pdf" target="_blank" rel="noopener">Résumé (PDF)</a>
+        <span style="color:var(--muted);font-size:15px">Open to remote roles</span>
+      </div>
+    </div>
+    <figure class="hero-photo">
+      <img src="assets/sierra-elephant.jpg" alt="Sierra Hall smiling and looking up beside an elephant at sunset" width="840" height="1080">
+      <figcaption>AI-assisted composite from my own photo</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- SUPERPOWER -->
+<section class="power">
+  <div class="wrap">
+    <p class="big">We learn to name our tasks. We rarely name how we think.</p>
+    <p class="lede" style="color:var(--ivory);font-size:19px">My pattern: map the gray space, question the familiar, and create clarity people can use. It's the same instinct at a Best Buy depot, a delivery network and a school district. At Best Buy, I didn't have a name for it yet. In a public school district, I built a model around it.</p>
+  </div>
+</section>
+
+<!-- HERD -->
+<section id="herd">
+  <div class="wrap">
+    <span class="eyebrow">The herd</span>
+    <h2 style="margin-top:10px">Every number had to walk in on its own feet.</h2>
+    <p class="lede" style="margin-top:14px">Measured results only. No projections, no borrowed benchmarks.</p>
+    <div class="herd-stage" id="herdStage" aria-hidden="true"></div>
+    <div class="stats" id="stats">
+      <div class="stat" data-k="0"><span class="tier">Measured</span><b>523</b><span>staff surveys, hand-delivered and hand-keyed</span></div>
+      <div class="stat" data-k="1"><span class="tier">Measured</span><b>752 → 484</b><span>staff records cleaned to the people actually employed</span></div>
+      <div class="stat" data-k="2"><span class="tier">Measured</span><b>800</b><span>unused Chromebooks found and deployed</span></div>
+      <div class="stat" data-k="0"><span class="tier">Measured</span><b>219</b><span>staff at a district's first in-house PD in 5+ years</span></div>
+      <div class="stat" data-k="1"><span class="tier">Measured</span><b>79%</b><span>first-year timeclock adoption among required staff</span></div>
+      <div class="stat" data-k="2"><span class="tier">Measured</span><b>≥98%</b><span>employee satisfaction and safety, three straight years at a Best Buy depot</span></div>
+      <div class="stat" data-k="0"><span class="tier">Milestone</span><b>5 → 102</b><span>delivery hubs in 7 months at Hibbett Sports</span></div>
+      <div class="stat" data-k="1"><span class="tier">Measured</span><b>$15K+</b><span>recovered through a board-approved buyback</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- JOURNEY -->
+<section id="journey" class="journey">
+  <div class="wrap">
+    <div class="j-head">
+      <div style="display:flex;flex-direction:column;gap:10px;max-width:760px">
+        <span class="eyebrow">The journey · A Title I public school district · 2024–present</span>
+        <h2>The tech isn't broken. The morale is.</h2>
+      </div>
+      <button class="chip" id="quickBtn" aria-pressed="false">Just give me the 60 seconds</button>
+    </div>
+    <div id="quick" hidden class="card fade" style="margin-top:28px;padding:26px;max-width:860px">
+      <span class="eyebrow">The 60-second version</span>
+      <p style="margin:10px 0 0">Staff believed technology was failing them. I hand-keyed 523 surveys, spent a month in classrooms, and found the technology was old, not absent: 800 Chromebooks were still in their boxes. I cleaned staff records from 752 to the 484 people actually employed, hosted the district's first in-house PD in five years for 219 staff, and implemented a timeclock with 79% first-year adoption.</p>
+    </div>
+    <div id="journeyBody">
+      <div class="dots" id="dots" role="group" aria-label="Chapters"></div>
+      <div class="chapter" id="chapter" aria-live="polite"></div>
+      <div class="j-nav">
+        <button class="btn btn-ghost" id="back">Back</button>
+        <button class="btn btn-gold" id="next">Continue</button>
+      </div>
+    </div>
+    <details class="table">
+      <summary>Heard → Done: what staff told me, and what's in place now</summary>
+      <div class="tscroll"><table>
+        <thead><tr><th>What staff told me</th><th>What's in place now</th></tr></thead>
+        <tbody>
+          <tr><td>"No one communicates with us"</td><td>Every email answered, a monthly staff newsletter, PD notices sent regularly</td></tr>
+          <tr><td>"No one knows the dates"</td><td>District calendar board-approved and uploaded before any late notices</td></tr>
+          <tr><td>"PowerSchool is a mess"</td><td>Records cleaned 752 → 484, dormant profiles closed, Clever fully integrated</td></tr>
+          <tr><td>"We don't understand the gradebook"</td><td>A pen-and-paper gradebook course; no gradebook issues since</td></tr>
+          <tr><td>"No ticketing, no one to contact"</td><td>A ticketing system that routes each request to the right person</td></tr>
+          <tr><td>"No one can see our time"</td><td>A district-wide timeclock, 79% adoption in year one</td></tr>
+          <tr><td>"We don't have technology"</td><td>800 Chromebooks deployed, 7 rooms reopened, $15K+ recovered for smart boards</td></tr>
+          <tr><td>"We don't know how to teach DLCS"</td><td>K-4 and 5-8 pacing guides that work without home internet or devices</td></tr>
+        </tbody>
+      </table></div>
+    </details>
+  </div>
+</section>
+
+<!-- THINKING IN ELEPHANT -->
+<section id="think" class="think">
+  <div class="wrap">
+    <div style="display:flex;flex-direction:column;gap:12px;max-width:820px">
+      <span class="eyebrow">Thinking in elephant</span>
+      <h2>Every part of the elephant is a question I ask.</h2>
+      <p class="lede">These are real prompts I give my AI partners, what each one means for a business, and what I did with the answer.</p>
+    </div>
+    <div class="think-stage" id="thinkStage">
+      <div class="head-art">
+        <svg viewBox="0 0 400 300" fill="none" stroke="#8E8A83" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Line drawing of an elephant's head with a moving ear and a leaf at its feet">
+          <g class="glow">
+            <path class="part ear" data-p="ears" d="M196 70 C150 64 118 100 124 160 C128 200 160 226 196 214 C214 190 222 120 196 70 Z"/>
+            <path class="part" data-p="memory" d="M196 70 C226 40 290 38 318 76 C340 106 336 150 318 176"/>
+            <circle class="part" data-p="memory" cx="282" cy="112" r="4" fill="#8E8A83"/>
+            <path class="part" data-p="trunk" d="M318 176 C326 210 324 246 306 268 C298 278 286 276 288 264"/>
+            <path class="part" data-p="trunk" d="M300 186 C312 196 326 196 336 188"/>
+            <path class="part" data-p="feet" d="M196 214 C210 236 214 258 214 284 M246 196 C246 226 250 258 256 284"/>
+            <path class="part" data-p="leaf" d="M70 284 C40 262 34 232 48 212 C54 204 62 206 66 214 C70 206 78 204 84 212 C98 232 94 262 70 284 Z M66 214 V284"/>
+          </g>
+        </svg>
+      </div>
+      <div class="think-panel">
+        <div style="display:flex;flex-wrap:wrap;gap:8px" role="group" aria-label="Parts of the elephant" id="partBtns"></div>
+        <div>
+          <h3 id="pName" style="font-size:32px;font-weight:800">The ears</h3>
+          <p class="metaphor" id="pMeta"></p>
+        </div>
+        <div class="card">
+          <div class="card-h"><span>My prompt</span><span>Actual prompt · lightly edited for typos</span></div>
+          <p class="typed" id="pPrompt"></p>
+        </div>
+        <div class="duo">
+          <div><h4>What it means for a business</h4><p id="pBiz"></p></div>
+          <div><h4>Proof</h4><p id="pProof"></p></div>
+        </div>
+        <p style="margin:0;font-size:15px"><b style="color:var(--gold)">What I did with the answer · </b><span id="pDid"></span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BEST BUY -->
+<section id="bestbuy" class="bb">
+  <div class="wrap">
+    <span class="eyebrow">Before I had a name for it · Best Buy Houston depot · 2017–2020</span>
+    <h2 style="margin-top:10px">Two operations, one building.</h2>
+    <p class="lede" style="margin-top:14px">An overnight logistics operation and a daytime repair operation: 182 people, mostly new to Houston, sharing one building and two very different clocks.</p>
+    <div style="display:flex;gap:8px;margin-top:24px;flex-wrap:wrap" role="group" aria-label="Show the building before or after">
+      <button class="chip" id="bbBefore" aria-pressed="true">Before</button>
+      <button class="chip" id="bbAfter" aria-pressed="false">After</button>
+    </div>
+    <div class="building">
+      <div style="background:#16171A"><b>DDC Logistics</b><span style="color:var(--muted)">Overnight · 123 people</span></div>
+      <div class="zone">
+        <span class="eyebrow" style="color:var(--ivory)">The handoff zone</span>
+        <div id="gaps" style="display:flex;flex-direction:column;gap:8px">
+          <div class="gap">Gap · Receiving</div><div class="gap">Gap · Yard and carriers</div><div class="gap">Gap · Knowledge and voice</div>
+        </div>
+        <div id="fixes" hidden style="display:flex;flex-direction:column;gap:8px" class="fade">
+          <div class="fix">Batch receiving · the Morning Clock</div><div class="fix">Yellow seals, white seals</div><div class="fix">Shared guides · suggestion box · Friday games</div>
+        </div>
+      </div>
+      <div style="background:#3A3B3F"><b>Geek Squad Repairs</b><span style="color:var(--ivory)">Until 3 p.m. · 59 people</span></div>
+    </div>
+    <div class="clock">
+      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline">
+        <h3 style="font-size:28px;font-weight:800">The Morning Clock</h3>
+        <label for="clock" style="color:var(--muted);font-size:14px">Drag through the morning</label>
+      </div>
+      <input id="clock" type="range" min="0" max="5" step="1" value="0">
+      <div class="clock-read" aria-live="polite"><b id="clockT" style="color:var(--ember)">Before</b><p id="clockD"></p></div>
+    </div>
+    <div class="three">
+      <div><span class="tier">Measured</span>≥98% employee satisfaction and safety for three years, across unannounced corporate visits every two to three months.</div>
+      <div><span class="tier">Milestones</span>No next-day trailer carryover. Customer units in technicians' hands by 10 a.m.</div>
+      <div><span class="tier">Observed</span>Not every elephant has the courage to speak up, so I built a suggestion box. It went unused once people started saying "Hey, you got a sec?"</div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:32px;margin-top:40px">
+      <p class="quote" style="flex:2 1 440px">My manager had been with Best Buy for 19 years and had been called back during time off before. Then he took seven full days off, without his phone. He called me <span style="color:var(--gold-hi)">"Bosslady."</span></p>
+      <p class="quote" style="flex:1 1 260px;color:var(--gold-hi);font-style:italic">"Accountability did not cancel someone's belonging."</p>
+    </div>
+  </div>
+</section>
+
+<!-- HIBBETT -->
+<section id="hibbett">
+  <div class="wrap">
+    <span class="eyebrow">At scale · Hibbett Sports · 2022–2023</span>
+    <h2 style="margin-top:10px">102 hubs in seven months.</h2>
+    <p class="lede" style="margin-top:14px">I supported rollout readiness, documentation and field route testing as last-mile delivery grew from 5 to 102 hubs, turning front-line issues into requirements for developers and delivery partners.</p>
+    <div class="stats" style="margin-top:24px">
+      <div class="stat"><b>5 → 102</b><span>delivery hubs in 7 months</span></div>
+      <div class="stat"><b>1,100+</b><span>stores in the network</span></div>
+      <div class="stat"><b>36</b><span>states</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW I WORK -->
+<section id="work" class="bb">
+  <div class="wrap">
+    <span class="eyebrow">How I work</span>
+    <h2 style="margin-top:10px">Before adoption, build alignment.</h2>
+    <div class="loop">
+      <div><h3>Listen</h3><p>Observe the work and find the gap people can't name yet.</p><small>AI helps me discover and diagnose</small></div>
+      <div><h3>Align</h3><p>Connect people, policy, ownership and purpose.</p><small>AI helps me design</small></div>
+      <div><h3>Implement</h3><p>Build the workflow and equip the team to own it.</p><small>AI helps me enable</small></div>
+      <div><h3>Reconcile</h3><p>Compare what we intended with what people live, and adjust.</p><small>AI helps me measure</small></div>
+    </div>
+    <p class="lede" style="margin-top:16px">My AI-Enabled Operating Model: "AI does not replace people. AI replaces friction." Copilot is my enterprise thinking partner, Gemini is my research partner held to evidence standards, and every unverified claim goes on a list until it has a source.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:32px;margin-top:40px;align-items:flex-start">
+      <div style="flex:1 1 340px;min-width:0">
+        <h3 style="font-size:24px;font-weight:800">The prompting pyramid</h3>
+        <p class="lede" style="margin:8px 0 16px">How I teach people to ask AI for help.</p>
+        <div class="pyramid">
+          <div><b>Clarity</b><span>What decision or output do I need?</span></div>
+          <div><b>Context</b><span>What situation and evidence matter?</span></div>
+          <div><b>Constraints</b><span>What rules, limits and format apply?</span></div>
+        </div>
+      </div>
+      <div style="flex:1 1 440px;min-width:0">
+        <h3 style="font-size:24px;font-weight:800">From my prompt library</h3>
+        <p class="lede" style="margin:8px 0 16px">AI helps me ask better questions. People give me the answers. I verify before anything ships.</p>
+        <div class="lib">
+          <div><b>Operational</b><code>Turn this process into an SOP. Identify missing owners and decision points.</code></div>
+          <div><b>Leadership</b><code>Compare these options against our priorities. State the tradeoffs.</code></div>
+          <div><b>Community</b><code>Synthesize these listening notes. Preserve disagreement and unmet needs.</code></div>
+          <div><b>AI agent</b><code>Define allowed actions, required inputs, stop conditions, and escalation.</code></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NEXT -->
+<section id="next">
+  <div class="wrap">
+    <span class="eyebrow">What I'm building next · Concepts in development</span>
+    <h2 style="margin-top:10px">"Stating it over and over means nothing if people are scared to talk."</h2>
+    <p class="lede" style="margin-top:14px">At Best Buy it was a suggestion box. In a school district it was 523 hand-delivered surveys. Next, it's a practice any leader can run every week, with AI doing the sorting and people doing the deciding.</p>
+    <div class="pair">
+      <div>
+        <h3 style="font-size:26px;font-weight:800">The Monday bell ringer</h3>
+        <p style="margin:0;font-size:15px">Teachers open class with a quick question and decide what to teach first. Before Monday's meeting, a team answers a few anonymous questions, AI finds the patterns, and the leader walks in already knowing what isn't clear.</p>
+        <div class="steps"><span>Ask</span><span>Analyze</span><span>Share</span><span>Act</span><span>Repeat</span></div>
+        <div style="border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:10px">
+          <span class="eyebrow">Try it · answer anonymously</span>
+          <p style="margin:0;font-weight:700">Could you explain this week's goal in your own words?</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap" id="bell" role="group" aria-label="Your answer">
+            <button class="chip" data-a="yes" aria-pressed="false">Yes</button><button class="chip" data-a="sort" aria-pressed="false">Sort of</button><button class="chip" data-a="no" aria-pressed="false">No</button>
+          </div>
+          <div id="bellOut" hidden class="fade" style="background:var(--stage);border-radius:10px;padding:14px"><div style="font-size:13px;color:var(--muted);margin-bottom:4px">What the leader sees: team patterns, never names</div><p style="margin:0" id="bellText"></p></div>
+        </div>
+      </div>
+      <div>
+        <h3 style="font-size:26px;font-weight:800">A strategist with an AI agent</h3>
+        <p style="margin:0;font-size:15px">The person brings judgment, alignment and leadership. The AI agent handles monitoring, documentation and early warnings, so the person can spend their time on people.</p>
+        <div class="duo">
+          <div><h4>Policy &amp; accountability</h4><p>Flags inconsistent procedures, tracks follow-through</p></div>
+          <div><h4>Leadership development</h4><p>Spots training needs from recurring questions</p></div>
+          <div><h4>Cross-department operations</h4><p>Surfaces repeat delays and handoff gaps</p></div>
+          <div><h4>Community &amp; sustainability</h4><p>Finds aligned grants, tracks engagement</p></div>
+        </div>
+        <p class="metaphor" style="font-size:22px">The gray is where I start. The AI gives me the visibility to map it.</p>
+      </div>
+    </div>
+    <div class="guard">
+      <h3 style="font-size:26px;font-weight:800">The guardrails come first</h3>
+      <div class="guard-grid">
+        <div><b>Patterns, never people</b>Results shown by team, with a minimum group size so no one is singled out.</div>
+        <div><b>People decide</b>AI flags. A person reviews before anything affects a student or an employee.</div>
+        <div><b>Least data needed</b>Student data stays protected under FERPA; the agent sees only what the task requires.</div>
+        <div><b>Everyone knows</b>Staff are told what's measured, why, and who sees it.</div>
+        <div><b>Every action logged</b>An audit trail, and a clear way to correct mistakes.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STORY -->
+<section id="story" class="bb">
+  <div class="wrap">
+    <span class="eyebrow">My story</span>
+    <h2 style="margin-top:10px">Six years, two states, one instinct.</h2>
+    <ol class="timeline">
+      <li><b>2024 – present</b><span>Technology Integration Lead · Title I public school district, Alabama</span></li>
+      <li><b>2023 – 2025</b><span>Service Desk Technical Analyst II · Samford University</span></li>
+      <li><b>2022 – 2023</b><span>Omnichannel Analyst and Program Manager · Hibbett Sports</span></li>
+      <li><b>2020 – 2022</b><span>Freight Operations Supervisor · XPO Logistics</span></li>
+      <li><b>2014 – 2020</b><span>Best Buy · Mobile, AL → Geek Squad Manager, Texas → Depot Operations &amp; Repair Supervisor, Houston</span></li>
+    </ol>
+    <div class="lessons">
+      <figure><blockquote>"Always remember how you show up."</blockquote><figcaption>Gary Kirby Jr.</figcaption></figure>
+      <figure><blockquote>"I'm not doing my job if you aren't getting promoted."</blockquote><figcaption>Taylor Eaves</figcaption></figure>
+      <figure><blockquote>"Everything isn't always black and white as a leader; sometimes we do need the gray."</blockquote><figcaption>Jeff Johnsey</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- FINALE -->
+<section id="elephant" class="finale">
+  <div class="finale-bg" aria-hidden="true"></div>
+  <div class="wrap">
+    <span class="eyebrow">Your turn</span>
+    <h2>What's your elephant?</h2>
+    <p class="lede" style="color:var(--ivory)">You've walked through how I show up. Three questions, and you'll know how you do.</p>
+    <div class="quiz" id="quiz" aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- CONNECT -->
+<section id="connect" class="connect">
+  <div class="wrap">
+    <h2>You've walked it with me. Let's move something forward.</h2>
+    <p class="lede">Looking for remote Implementation &amp; Program Leadership roles in AI governance and enablement.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:12px">
+      <a class="btn btn-gold" href="mailto:sierra.hall75@gmail.com">Email me</a>
+      <a class="btn btn-ghost" href="https://www.linkedin.com/in/sierrahallprofessional/" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn btn-ghost" href="assets/Sierra_Hall_Resume.pdf" target="_blank" rel="noopener">Résumé (PDF)</a>
+    </div>
+    <div class="email"><span>sierra.hall75@gmail.com</span><button class="chip" id="copy" type="button">Copy email</button><span id="copied" role="status" style="font-size:14px;color:var(--gold)"></span></div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap"><span>Sierra Hall · Birmingham, AL</span><span>Always forward.</span></div></footer>
+
+<template id="elephantTpl">
+  <svg viewBox="0 0 120 80" fill="none" stroke="#C3A16A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="glow" aria-hidden="true">
+    <path d="M18 44 C14 28 26 16 48 15 C64 14 74 18 80 24"/>
+    <path d="M76 22 C82 12 98 12 102 24 C105 32 102 40 98 44 C100 54 102 62 108 66 C110 67 111 64 109 62"/>
+    <path d="M80 20 C72 24 72 40 82 44 C88 40 90 30 86 22"/>
+    <path d="M96 46 C100 50 104 50 106 48"/>
+    <path d="M18 44 C20 50 26 52 32 52 L78 52 C86 52 92 48 96 44"/>
+    <path d="M18 36 C14 38 12 44 12 48"/>
+    <circle cx="92" cy="28" r="1.4" fill="#C3A16A"/>
+    <path class="leg" d="M28 50 V74 H35 V51"/>
+    <path class="leg b" d="M40 51 V74 H47 V52"/>
+    <path class="leg b" d="M70 51 V74 H77 V51"/>
+    <path class="leg" d="M82 50 V74 H89 V49"/>
+  </svg>
+</template>
+
+<script>
+(function(){
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function $(id){ return document.getElementById(id); }
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+  /* Typewriter shared by the journey and the elephant */
+  function typer(el){
+    var timer = null;
+    return function(text, done){
+      clearInterval(timer);
+      if (reduce){ el.innerHTML = esc(text); if (done) done(); return; }
+      var i = 0; el.innerHTML = '<span class="caret">▍</span>';
+      timer = setInterval(function(){
+        i = Math.min(text.length, i + 2);
+        el.innerHTML = esc(text.slice(0, i)) + '<span class="caret">▍</span>';
+        if (i >= text.length){ clearInterval(timer); if (done) done(); }
+      }, 26);
+    };
+  }
+
+  /* ---------- HERD: elephants walk across carrying the numbers ---------- */
+  var stage = $('herdStage'), tpl = $('elephantTpl');
+  var tags = ['523 surveys', '752 → 484', '800 Chromebooks'];
+  var walkers = tags.map(function(t, k){
+    var w = document.createElement('div');
+    w.className = 'walker';
+    w.style.setProperty('--dur', (16 + k * 2) + 's');
+    w.style.setProperty('--delay', (k * 5.5) + 's');
+    w.appendChild(tpl.content.cloneNode(true));
+    var tag = document.createElement('span'); tag.className = 'tag'; tag.textContent = t; w.appendChild(tag);
+    stage.appendChild(w);
+    return w;
+  });
+  var stats = Array.prototype.slice.call(document.querySelectorAll('#stats .stat'));
+  if ('IntersectionObserver' in window && !reduce){
+    new IntersectionObserver(function(es){
+      es.forEach(function(e){ walkers.forEach(function(w){ w.classList.toggle('go', e.isIntersecting); }); });
+    }, { threshold: .2 }).observe(stage);
+    walkers.forEach(function(w, k){
+      w.addEventListener('animationiteration', function(ev){ if (ev.animationName === 'walk') light(k); });
+      setTimeout(function(){ light(k); }, (k * 5.5 + 8) * 1000);
+    });
+  }
+  function light(k){
+    stats.forEach(function(s){ if (+s.dataset.k === k){ s.classList.add('lit'); setTimeout(function(){ s.classList.remove('lit'); }, 2600); } });
+  }
+
+  /* ---------- JOURNEY ---------- */
+  var chapters = [
+    { k:'Chapter 1 · The gap, felt first', t:'Six weeks in. No paycheck.', b:'Paper checks. Carbon copies. Nobody could tell me who to ask.', q:'What would you do?', o:['Walk away','Email HR one more time','Ask what this feels like for everyone else'], r:'I almost walked away. Instead I asked the third question, and it became the job.', aside:'Before I designed for the gap, I lived in it.' },
+    { k:'Chapter 2 · A plan written blind', t:'Two months in, I had a polished plan.', b:'I handed ChatGPT my notes and asked for a strategy. It gave me five tidy phases. Then I hand-keyed 523 staff surveys, and the numbers didn’t fit the plan.', card:'Working with AI', label:'Actual prompt', p:'Please create an official and strategic initiative for this project.', after:'I kept the structure and threw out the assumptions.', q:'Your plan is polished. Your data says you don’t know the land yet. Do you submit it?', o:['Submit it','Put it down'], r:'I put it down. The plan was mine. The district wasn’t mine yet.' },
+    { k:'Chapter 3 · 7 p.m.', t:'The survey hurt. So I stayed late.', b:'After the survey flare-up, I caught a middle school principal after hours. We talked about why I left higher education, what Black excellence means to me, and the worries of the district. I apologized for how the survey made her and her staff feel, and made one promise: not today, not tomorrow, but one step at a time.', card:'From my email that night', label:'Feb 11, 2025 · 8:34 p.m.', p:'Again, I will fight for US! These babies are all we have. “Where there is no vision, there is no hope.” You were my hope today!', after:'She told me it felt good to know there was still hope. The next morning, she wrote back asking to meet about moving her school forward. Her school’s unused lab is the one I’m now working to turn into a STEM lab.' },
+    { k:'Chapter 4 · Finding water', t:'A month in classrooms. 180 questions.', b:'I keyed all 523 surveys by hand, then spent a month in classrooms with one disclaimer: treat me like a student. Show me, and tell me who you would call.', card:'Working with AI', label:'Reconstructed prompt', p:'I come from a private university with funding, policy and structure. Help me map how operations work in a small Title I K-12 district, and what I might be missing.', after:'AI helped me ask better questions. Teachers gave me the answers.' },
+    { k:'Chapter 5 · Cleaning the pond', t:'Everything drinks from the same water.', b:'Rosters, logins, payroll and state reports all draw from the student information system. It listed 752 staff.', kind:'clean', card:'Working with AI', label:'Reconstructed prompt', p:'Sort my survey results and observation notes into three lists: operations, technology, and mental health and turnover. Then show me what I can fully control before budgets roll out in May.', after:'The answer was the records. So I started there.' },
+    { k:'Chapter 6 · Old, not absent', t:'“We don’t have technology.”', b:'That’s what staff told me. That summer, I inventoried every classroom.', kind:'boxes', aside:'Tech is the front door, so it takes the blame for the whole house.' },
+    { k:'Chapter 7 · Full circle', t:'I started this job without a paycheck.', b:'This year, I put in the system that lets payroll see everyone’s time: 79% adoption in year one. Along the way, 219 staff came to the district’s first in-house PD in five years, and I publicly apologized for the survey that had hurt morale.', kind:'end', aside:'The shrugs turned into “Hey, you got a sec?”' }
+  ];
+  var step = 0, answers = {}, records = 752, cleaning = false, opened = false;
+  var chEl = $('chapter'), dotsEl = $('dots');
+  chapters.forEach(function(c, i){
+    var d = document.createElement('button'); d.className = 'dot'; d.setAttribute('aria-label', 'Chapter ' + (i + 1)); d.innerHTML = '<i></i>';
+    d.addEventListener('click', function(){ go(i); }); dotsEl.appendChild(d);
+  });
+  function go(i){ step = Math.max(0, Math.min(chapters.length - 1, i)); render(); }
+  function render(){
+    var c = chapters[step];
+    Array.prototype.forEach.call(dotsEl.children, function(d, i){ d.className = 'dot' + (i < step ? ' done' : '') + (i === step ? ' on' : ''); d.setAttribute('aria-current', i === step ? 'step' : 'false'); });
+    var h = '<div class="ch-text fade"><span class="eyebrow">' + esc(c.k) + '</span><h3>' + esc(c.t) + '</h3><p style="margin:0">' + esc(c.b) + '</p>';
+    if (c.q){
+      h += '<p style="margin:6px 0 0;font-weight:700">' + esc(c.q) + '</p><div class="opts">';
+      c.o.forEach(function(o, j){ h += '<button class="opt" data-j="' + j + '" aria-pressed="' + (answers[step] === j) + '">' + esc(o) + '</button>'; });
+      h += '</div>' + (answers[step] !== undefined ? '<p class="reveal fade">' + esc(c.r) + '</p>' : '');
+    }
+    if (c.kind === 'clean'){
+      h += '<div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap"><span class="big-n" id="rec" style="color:' + (records <= 484 ? 'var(--gold-hi)' : 'var(--ivory)') + '">' + records + '</span><span style="color:var(--muted)">staff on record</span></div>';
+      h += '<button class="btn btn-ghost" id="cleanBtn" style="align-self:flex-start">' + (records <= 484 ? 'Records cleaned' : 'Clean the records') + '</button>';
+      if (records <= 484) h += '<p class="reveal">484 people actually worked there. Former staff still had live accounts. Now they don’t, and Clever is fully integrated.</p>';
+    }
+    if (c.kind === 'boxes'){
+      if (!opened) h += '<button class="btn btn-ghost" id="openBtn" style="align-self:flex-start">Open the storage room</button>';
+      else {
+        h += '<div class="boxes" aria-label="800 Chromebooks, shown as 80 squares of 10">';
+        for (var b = 0; b < 80; b++) h += '<i style="animation-delay:' + (b * 12) + 'ms"></i>';
+        h += '</div><span style="font-size:13px;color:var(--muted)">Each square is 10 devices.</span><p class="reveal">800 Chromebooks, still in their boxes. Old, not absent. Deployed, with 5 classrooms and 2 labs returned to teaching and $15K+ recovered through a board-approved buyback.</p>';
+      }
+    }
+    if (c.kind === 'end') h += '<p class="reveal" style="font-style:italic;font-size:32px">"An elephant can’t jump. But it can pivot."</p>';
+    h += '</div><div class="ch-side fade">';
+    if (c.p){
+      h += '<div class="card"><div class="card-h"><span>' + esc(c.card) + '</span><span>' + esc(c.label) + '</span></div><p class="typed" id="typed"></p><div class="card-f" id="after" hidden><b>What happened next · </b>' + esc(c.after) + '</div></div>';
+    } else {
+      h += '<p class="quote" style="border-top:1px solid var(--line);padding-top:16px;font-style:italic;color:var(--muted)">' + esc(c.aside) + '</p>';
+    }
+    h += '</div>';
+    chEl.innerHTML = h;
+    Array.prototype.forEach.call(chEl.querySelectorAll('.opt'), function(b){ b.addEventListener('click', function(){ answers[step] = +b.dataset.j; render(); }); });
+    var cb = $('cleanBtn'); if (cb) cb.addEventListener('click', clean);
+    var ob = $('openBtn'); if (ob) ob.addEventListener('click', function(){ opened = true; render(); });
+    if (c.p){ var t = typer($('typed')); t(c.p, function(){ var a = $('after'); if (a) a.hidden = false; }); }
+    $('back').disabled = step === 0; $('back').style.opacity = step === 0 ? .4 : 1;
+    $('next').textContent = step < chapters.length - 1 ? 'Continue' : 'Start again';
+  }
+  function clean(){
+    if (cleaning || records <= 484) return;
+    cleaning = true;
+    if (reduce){ records = 484; cleaning = false; render(); return; }
+    var iv = setInterval(function(){
+      records = Math.max(484, records - 4);
+      var r = $('rec'); if (r) r.textContent = records;
+      if (records <= 484){ clearInterval(iv); cleaning = false; render(); }
+    }, 30);
+  }
+  $('back').addEventListener('click', function(){ go(step - 1); });
+  $('next').addEventListener('click', function(){ go(step < chapters.length - 1 ? step + 1 : 0); });
+  $('quickBtn').addEventListener('click', function(){
+    var q = $('quick'), on = q.hidden; q.hidden = !on; $('journeyBody').hidden = on;
+    this.setAttribute('aria-pressed', on); this.textContent = on ? 'Take the journey instead' : 'Just give me the 60 seconds';
+  });
+  render();
+
+  /* ---------- THINKING IN ELEPHANT ---------- */
+  var parts = [
+    { id:'ears', name:'The ears', m:'Big ears hear what isn’t being said.', p:'How does this support organizational gaps? And how do we identify them?', biz:'Discovery: finding where people actually get stuck before anyone buys or builds anything.', proof:'523 hand-keyed surveys and 180+ handwritten questions showed the technology was old, not absent.', did:'I used the AI’s gap categories (knowledge, process, confidence, capacity) as a lens for my notes, then checked each one against what teachers told me.' },
+    { id:'memory', name:'The memory', m:'An elephant never answers before it remembers.', p:'Please take the following folder and provide a framework that aligns with the original concepts in the Copilot folder. Before providing context, reference NotebookKey.', biz:'Knowledge management and evidence standards: every answer starts from what the organization already knows.', proof:'My NotebookKey keeps accepted findings, open questions, and a list of claims that still need a source.', did:'I gave each AI a role: Copilot as my enterprise thinking partner, Gemini as my research partner held to evidence standards.' },
+    { id:'trunk', name:'The trunk', m:'The trunk reaches people. It carries, feeds and cools.', p:'How does AI play a part within this framework, both in identifying problems and in solutions?', biz:'Service delivery: AI extends my reach so help gets to people faster. It never replaces the person deciding.', proof:'A ticketing system that routes each request to the right person, and guides people can use without me in the room.', did:'I kept the core principle, “AI does not replace people. AI replaces friction,” and set aside automation a small district can’t staff.' },
+    { id:'feet', name:'The feet', m:'Too big to jump, so it pivots, one step at a time.', p:'Act as an enterprise implementation director and determine a framework that proves technology implementations and digital transformations should always start with people. Provide all supported metrics and an analysis.', biz:'Sequencing: people first, then process, then technology. Skipping a step is how rollouts stall.', proof:'I put down a polished plan when my data said I didn’t know the land yet, then rebuilt it around what staff told me.', did:'I asked the AI to argue my thesis the way a director would, then tested it against my own rollouts.' },
+    { id:'leaf', name:'The leaf', m:'Elephant ears die back, return bigger, and grow best when pruned.', p:'What is the measurement of success?', biz:'Reconcile: measure value in use, meaning what people actually do, not go-live dates.', proof:'79% first-year timeclock adoption. 219 staff completing PD. ≥98% satisfaction and safety for three years.', did:'The answer promised “85–95% predictable scalability” as a “mathematical certainty.” That went straight onto my list of claims needing a source. I report only what I can prove.' }
+  ];
+  var pBtns = $('partBtns'), pType = typer($('pPrompt')), tStage = $('thinkStage'), activeT = null;
+  parts.forEach(function(p, i){
+    var b = document.createElement('button'); b.className = 'chip'; b.textContent = p.name.replace('The ', '');
+    b.addEventListener('click', function(){ pick(i); }); pBtns.appendChild(b);
+  });
+  function pick(i){
+    var p = parts[i];
+    Array.prototype.forEach.call(pBtns.children, function(b, j){ b.setAttribute('aria-pressed', j === i); });
+    Array.prototype.forEach.call(document.querySelectorAll('.part'), function(el){ el.classList.toggle('on', el.dataset.p === p.id); });
+    $('pName').textContent = p.name; $('pMeta').textContent = p.m; $('pBiz').textContent = p.biz; $('pProof').textContent = p.proof; $('pDid').textContent = p.did;
+    pType(p.p);
+    tStage.classList.add('active'); clearTimeout(activeT); activeT = setTimeout(function(){ tStage.classList.remove('active'); }, 2600);
+  }
+  pick(0);
+
+  /* ---------- BEST BUY ---------- */
+  function bb(after){
+    $('bbBefore').setAttribute('aria-pressed', !after); $('bbAfter').setAttribute('aria-pressed', after);
+    $('gaps').hidden = after; $('fixes').hidden = !after;
+  }
+  $('bbBefore').addEventListener('click', function(){ bb(false); });
+  $('bbAfter').addEventListener('click', function(){ bb(true); });
+  var clock = [
+    ['Before','Nine to twelve trailers, many carrying drop-offs from six or more stores. Some waited until the next day: one more day without a customer’s laptop.'],
+    ['4:00','Trucks are in. I spend the first hour beside the receiving team before I touch email.'],
+    ['6:30','Technicians arrive. I confirm customer units are received and ready for them.'],
+    ['8:00','I check remaining store volume and move people from receiving to the floor if needed.'],
+    ['9:30','Truck receiving is complete.'],
+    ['10:00','Every customer unit is in the technician room. Nothing carries over to tomorrow.']
+  ];
+  function setClock(v){ $('clockT').textContent = clock[v][0]; $('clockD').textContent = clock[v][1]; $('clockT').style.color = v === 0 ? 'var(--ember)' : 'var(--gold-hi)'; }
+  $('clock').addEventListener('input', function(){ setClock(+this.value); });
+  setClock(0);
+
+  /* ---------- BELL RINGER ---------- */
+  var bellText = { yes:'Your answer joins the team’s. If most people say yes, Monday goes straight to the work.', sort:'“Sort of” is the answer people rarely say out loud. If it’s common, Monday starts by re-explaining the goal in plain words.', no:'Nobody had to raise a hand to say this. If enough people say no, the leader starts Monday by fixing the goal, not reviewing the numbers.' };
+  Array.prototype.forEach.call(document.querySelectorAll('#bell .chip'), function(b){
+    b.addEventListener('click', function(){
+      Array.prototype.forEach.call(document.querySelectorAll('#bell .chip'), function(x){ x.setAttribute('aria-pressed', x === b); });
+      $('bellText').textContent = bellText[b.dataset.a]; $('bellOut').hidden = false;
+    });
+  });
+
+  /* ---------- WHAT'S YOUR ELEPHANT? ---------- */
+  var questions = [
+    { q:'When something at work isn’t working, you first…', a:[['Listen for what nobody is saying','ears'],['Check what we already know','memory'],['Get the right help to the right people','trunk'],['Slow down and take the next right step','feet'],['Cut what isn’t growing and try again','leaf']] },
+    { q:'Your team would say you’re the one who…', a:[['Notices the quiet person in the room','ears'],['Remembers how we got here','memory'],['Makes sure everyone has what they need','trunk'],['Keeps us steady when things shake','feet'],['Makes us a little better every round','leaf']] },
+    { q:'Your first 30 days in a new role look like…', a:[['A listening tour','ears'],['Reading everything I can find','memory'],['Coffee with every team','trunk'],['One small win at a time','feet'],['A quick review, then a reset','leaf']] }
+  ];
+  var types = {
+    ears:{ n:'The Ears', d:'You hear what isn’t being said. People tell you things they haven’t told anyone else, and you catch problems before they have names.', s:'That’s how I started in a school district: 523 surveys and a month of listening before I changed anything.' },
+    memory:{ n:'The Memory', d:'You never answer before you remember. You keep the lessons, the history and the evidence that stop a team from repeating its mistakes.', s:'I keep a running list of claims that still need a source, even when the source is my own AI partner.' },
+    trunk:{ n:'The Trunk', d:'You reach people. You carry resources to where they’re needed and make sure help actually arrives.', s:'My ticketing system, guides and newsletters exist so help reaches people even when I’m not in the room.' },
+    feet:{ n:'The Feet', d:'You’re too steady to be rushed. You can’t jump, so you pivot, and your team trusts the ground you’re standing on.', s:'I put down a polished plan when the data said I wasn’t ready, and rebuilt it one step at a time.' },
+    leaf:{ n:'The Leaf', d:'You grow back bigger. You prune what isn’t working, reflect, and come back stronger every cycle.', s:'Every rollout I run ends with a playback and starts again better.' }
+  };
+  var qi = 0, score = {};
+  var quiz = $('quiz');
+  function drawQ(){
+    if (qi >= questions.length) return result();
+    var q = questions[qi];
+    var h = '<span class="progress">Question ' + (qi + 1) + ' of ' + questions.length + '</span><p style="margin:0;font-size:22px;font-weight:800">' + esc(q.q) + '</p><div class="opts">';
+    q.a.forEach(function(a, j){ h += '<button class="opt" data-j="' + j + '">' + esc(a[0]) + '</button>'; });
+    quiz.innerHTML = h + '</div>';
+    Array.prototype.forEach.call(quiz.querySelectorAll('.opt'), function(b){
+      b.addEventListener('click', function(){ var k = q.a[+b.dataset.j][1]; score[k] = (score[k] || 0) + 1; qi++; drawQ(); });
+    });
+  }
+  function result(){
+    var best = Object.keys(score).sort(function(a, b){ return score[b] - score[a]; })[0];
+    var t = types[best];
+    quiz.innerHTML = '<div class="result fade" style="display:flex;flex-direction:column;gap:12px"><span class="progress">Your elephant</span><h3>' + esc(t.n) + '</h3><p>' + esc(t.d) + '</p><p style="color:var(--muted)">' + esc(t.s) + '</p><p class="metaphor">Am I an elephant? Yes. Big ears, a long memory, and I pivot instead of jump. Every herd needs all five.</p><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-gold" href="#connect">Let’s talk</a><button class="btn btn-ghost" id="again">Take it again</button></div></div>';
+    $('again').addEventListener('click', function(){ qi = 0; score = {}; drawQ(); });
+  }
+  drawQ();
+
+  /* ---------- COPY EMAIL ---------- */
+  $('copy').addEventListener('click', function(){
+    var done = function(){ $('copied').textContent = 'Copied'; setTimeout(function(){ $('copied').textContent = ''; }, 2000); };
+    try { navigator.clipboard.writeText('sierra.hall75@gmail.com').then(done, function(){ $('copied').textContent = 'Select the address above to copy it'; }); }
+    catch (e) { $('copied').textContent = 'Select the address above to copy it'; }
+  });
+})();
+</script>
+
+</body>
+</html>
